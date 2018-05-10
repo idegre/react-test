@@ -27,7 +27,6 @@ class App extends Component{
         this.makeMultipleQuestionArray(this.state.questions.results[this.state.questionNumber].correct_answer,this.state.questions.results[this.state.questionNumber].incorrect_answers);
       });
     }else{
-
       this.setState({done:true,started:false});
     }
   }
@@ -56,10 +55,11 @@ class App extends Component{
         arr.push(obj);
         incorrectVal++;
       }else{
-        obj=incorrect[incorrectVal].replace(/&amp/g,'&').replace(/&quot;/g,'"').replace(/&apos;/g,"'").replace(/&#039;/g,"'").replace(/&eacute;/g,"Ë");
+        obj=correct.replace(/&amp/g,'&').replace(/&quot;/g,'"').replace(/&apos;/g,"'").replace(/&#039;/g,"'").replace(/&eacute;/g,"Ë");
         arr.push(obj);
       }
     }
+    console.log('arr:',arr)
     this.setState({currentCorrect:correctPos,currentAnswer:0,answerArray:arr});
   }
 
@@ -73,7 +73,7 @@ class App extends Component{
         item=<div className="scoreBoard">
           <h2>You finished!</h2>
           <h1>Your score: {this.state.score}</h1>
-          <h2>It took you: {Math.trunc(((time-this.state.startTime)/1000)/60)} minutes</h2>
+          <h2>It took you: {(((time-this.state.startTime)/1000)/60).toFixed(2)} minutes</h2>
         </div>
       }else{
         item=<RaisedButton label="Start" primary={true} className="startButton" onClick={()=>this.startQuiz(numberOfQuestions)}/>
@@ -92,7 +92,7 @@ class App extends Component{
       item=<div>
         <div>question {this.state.questionNumber+1}/{numberOfQuestions}</div>
         <h3 className="questionTitle">{title}</h3>
-        <RadioButtonGroup className="answerGroup" onChange={(value)=>{
+        <RadioButtonGroup className="answerGroup" defaultSelected="0" onChange={(value)=>{
           this.setState({currentAnswer:value});
         }}>
           {selectors}
