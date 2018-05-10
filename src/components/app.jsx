@@ -36,7 +36,7 @@ class App extends Component{
       response.json().then((data)=>{
         var d = new Date();
         var time = d.getTime();
-        this.setState({questions:data,started:true,questionNumber:0,startTime:time});
+        this.setState({questions:data,started:true,questionNumber:0,startTime:time,done:false,score:0,currentAnswer:null});
         this.makeMultipleQuestionArray(data.results[this.state.questionNumber].correct_answer,data.results[this.state.questionNumber].incorrect_answers);
         
       });
@@ -74,6 +74,7 @@ class App extends Component{
           <h2>You finished!</h2>
           <h1>Your score: {this.state.score}</h1>
           <h2>It took you: {(((time-this.state.startTime)/1000)/60).toFixed(2)} minutes</h2>
+          <RaisedButton label="Play again" primary={true} className="startButton" onClick={()=>this.startQuiz(numberOfQuestions)}/>
         </div>
       }else{
         item=<RaisedButton label="Start" primary={true} className="startButton" onClick={()=>this.startQuiz(numberOfQuestions)}/>
