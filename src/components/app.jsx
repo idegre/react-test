@@ -2,7 +2,6 @@ import React, {Component} from 'react';
 import '../style.css';
 import RaisedButton from 'material-ui/RaisedButton';
 import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
-import Question from './question'
 
 const numberOfQuestions=10;
 
@@ -13,24 +12,34 @@ class App extends Component{
       started:false,
       currentAnswer:null,
       answerArray:[],
+      done:false,
+      score:0,
     };
 	}
 
-	componentDidMount(){
-	}
-
   nextQuestion(){
-    this.setState({questionNumber:this.state.questionNumber+1},()=>{
-      this.makeMultipleQuestionArray(this.state.questions.results[this.state.questionNumber].correct_answer,this.state.questions.results[this.state.questionNumber].incorrect_answers);
-    });
+    if(this.state.currentAnswer==this.state.currentCorrect){
+      this.setState({score:this.state.score+1});
+    }
+    const qN=this.state.questionNumber+1
+    if(qN<=numberOfQuestions-1){
+      this.setState({questionNumber:qN,currentAnswer:0},()=>{
+        this.makeMultipleQuestionArray(this.state.questions.results[this.state.questionNumber].correct_answer,this.state.questions.results[this.state.questionNumber].incorrect_answers);
+      });
+    }else{
+
+      this.setState({done:true,started:false});
+    }
   }
 
   startQuiz(amount){
     fetch('https://opentdb.com/api.php?amount='+amount+'&type=multiple').then((response)=>{
       response.json().then((data)=>{
-        this.setState({questions:data,started:true,questionNumber:0});
+        var d = new Date();
+        var time = d.getTime();
+        this.setState({questions:data,started:true,questionNumber:0,startTime:time});
         this.makeMultipleQuestionArray(data.results[this.state.questionNumber].correct_answer,data.results[this.state.questionNumber].incorrect_answers);
-        //here i need to start a watch
+        
       });
     });
   }
@@ -43,21 +52,32 @@ class App extends Component{
     var arr=[];
     for(var i=0;i<=3;i++){
       if(i!=correctPos){
-        arr.push(incorrect[incorrectVal]);
+        obj=incorrect[incorrectVal].replace(/&amp/g,'&').replace(/&quot;/g,'"').replace(/&apos;/g,"'").replace(/&#039;/g,"'").replace(/&eacute;/g,"Ë");
+        arr.push(obj);
         incorrectVal++;
       }else{
-        arr.push(correct)
+        obj=incorrect[incorrectVal].replace(/&amp/g,'&').replace(/&quot;/g,'"').replace(/&apos;/g,"'").replace(/&#039;/g,"'").replace(/&eacute;/g,"Ë");
+        arr.push(obj);
       }
     }
     this.setState({currentCorrect:correctPos,currentAnswer:0,answerArray:arr});
-    console.log()
   }
 
 	render(){
     console.log(this.state);
     var item;
     if(!this.state.started){
-      item=<RaisedButton label="Start" primary={true} className="startButton" onClick={()=>this.startQuiz(numberOfQuestions)}/>
+      if(this.state.done){
+        var d = new Date();
+        var time = d.getTime();
+        item=<div className="scoreBoard">
+          <h2>You finished!</h2>
+          <h1>Your score: {this.state.score}</h1>
+          <h2>It took you: {Math.trunc(((time-this.state.startTime)/1000)/60)} minutes</h2>
+        </div>
+      }else{
+        item=<RaisedButton label="Start" primary={true} className="startButton" onClick={()=>this.startQuiz(numberOfQuestions)}/>
+      }
     }else{
       var question=this.state.questions.results[this.state.questionNumber];
       var title=question.question.replace(/&amp/g,'&').replace(/&quot;/g,'"').replace(/&apos;/g,"'").replace(/&#039;/g,"'").replace(/&eacute;/g,"Ë");
@@ -70,13 +90,16 @@ class App extends Component{
         />);
       }
       item=<div>
-      <h3 className="questionTitle">{title}</h3>
-      <RadioButtonGroup defaultSelected={0} className="answerGroup" onChange={(value)=>{
-        this.setState({currentAnswer:value});
-      }}>
-        {selectors}
-      </RadioButtonGroup>
-      <RaisedButton label="skip question" secondary={true} className="startButton" onClick={()=>this.nextQuestion()}/>
+        <div>question {this.state.questionNumber+1}/{numberOfQuestions}</div>
+        <h3 className="questionTitle">{title}</h3>
+        <RadioButtonGroup className="answerGroup" onChange={(value)=>{
+          this.setState({currentAnswer:value});
+        }}>
+          {selectors}
+        </RadioButtonGroup>
+        <div>
+          <RaisedButton label="next question" primary={true} className="startButton" onClick={()=>this.nextQuestion()}/>
+        </div>
       </div>
     }
     return(
