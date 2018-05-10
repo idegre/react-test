@@ -1,0 +1,20 @@
+@import url('https://fonts.googleapis.com/css?family=Roboto');
+
+
+.container{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+.startButton{
+
+}
+.hidden{
+  display: none;
+  visibility: hidden;
+}
+.answerGroup{
+  padding-bottom: 20px;
+  padding-left: 20px;
+}
