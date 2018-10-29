@@ -18,7 +18,7 @@ class App extends Component{
 	}
 
   nextQuestion(){
-    if(this.state.currentAnswer==this.state.currentCorrect){
+    if(this.state.currentAnswer === this.state.currentCorrect){
       this.setState({score:this.state.score+1});
     }
     const qN=this.state.questionNumber+1
@@ -49,8 +49,8 @@ class App extends Component{
     var incorrectVal=0;
     var obj;
     var arr=[];
-    for(var i=0;i<=3;i++){
-      if(i!=correctPos){
+    for(var i = 0; i <= 3; i++) {
+      if(i !== correctPos){
         obj=incorrect[incorrectVal].replace(/&amp/g,'&').replace(/&quot;/g,'"').replace(/&apos;/g,"'").replace(/&#039;/g,"'").replace(/&eacute;/g,"Ë");
         arr.push(obj);
         incorrectVal++;
